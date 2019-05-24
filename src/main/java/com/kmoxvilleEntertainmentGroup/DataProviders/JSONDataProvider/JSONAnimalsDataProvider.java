@@ -15,14 +15,11 @@ public class JSONAnimalsDataProvider implements DataProvider<List<Animal>> {
     private String dataSource;
 
     static {
-        DataProviderFactory.registerDataFormatHandler(new DataFormatHandler() {
-            @Override
-            public DataProvider canHandle(String format, DataProviderType type) {
-                if (format.endsWith(".json") && (type == DataProviderType.Animal ))
-                    return new JSONAnimalsDataProvider(format);
+        DataProviderFactory.registerDataFormatHandler((format, type) -> {
+            if (format.endsWith(".json") && (type == DataProviderType.Animal ))
+                return new JSONAnimalsDataProvider(format);
 
-                return null;
-            }
+            return null;
         });
     }
 
@@ -32,7 +29,7 @@ public class JSONAnimalsDataProvider implements DataProvider<List<Animal>> {
 
     @Override
     public List<Animal> readAllData() throws DataProviderException {
-        List<Animal> result = null;
+        List<Animal> result;
 
         try (FileReader fileReader = new FileReader(dataSource)) {
             JsonReader reader = new JsonReader(fileReader);
@@ -47,7 +44,7 @@ public class JSONAnimalsDataProvider implements DataProvider<List<Animal>> {
 
     //JSON parsing begin
     private List<Animal> readAnimalsArray(JsonReader reader) throws IOException {
-        List<Animal> animals = new ArrayList<Animal>();
+        List<Animal> animals = new ArrayList<>();
 
         reader.beginArray();
         while (reader.hasNext()) {
@@ -93,7 +90,7 @@ public class JSONAnimalsDataProvider implements DataProvider<List<Animal>> {
         }
         reader.endObject();
 
-        return new AbstractMap.SimpleEntry<String, String>(key, value);
+        return new AbstractMap.SimpleEntry<>(key, value);
     }
     //JSON parsing end
 }

@@ -11,14 +11,11 @@ public class JSONPropertiesDataProvider implements DataProvider<Map<String, Set<
     private String dataSource;
 
     static {
-        DataProviderFactory.registerDataFormatHandler(new DataFormatHandler() {
-            @Override
-            public DataProvider canHandle(String format, DataProviderType type) {
+        DataProviderFactory.registerDataFormatHandler((format, type) -> {
                 if (format.endsWith(".json") && (type == DataProviderType.Property ))
                     return new JSONPropertiesDataProvider(format);
 
                 return null;
-            }
         });
     }
 
@@ -28,7 +25,7 @@ public class JSONPropertiesDataProvider implements DataProvider<Map<String, Set<
 
     @Override
     public Map<String, Set<String>> readAllData() throws DataProviderException {
-        Map<String, Set<String>> result = null;
+        Map<String, Set<String>> result;
         try (FileReader fileReader = new FileReader(dataSource)) {
             JsonReader reader = new JsonReader(fileReader);
             result = readProperties(reader);
@@ -60,7 +57,7 @@ public class JSONPropertiesDataProvider implements DataProvider<Map<String, Set<
     }
 
     private Set<String> readPropertyValues(JsonReader reader) throws IOException {
-        Set<String> propValues = new HashSet<String>();
+        Set<String> propValues = new HashSet<>();
 
         reader.beginArray();
         while (reader.hasNext()) {
