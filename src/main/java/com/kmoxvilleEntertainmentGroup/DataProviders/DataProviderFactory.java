@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class DataProviderFactory {
     static {
-        formatHandlers = new ArrayList<DataFormatHandler>();
+        formatHandlers = new ArrayList<>();
         try {
             //FIXME
             Class.forName("com.kmoxvilleEntertainmentGroup.DataProviders.JSONDataProvider.JSONAnimalsDataProvider");
@@ -21,10 +21,10 @@ public class DataProviderFactory {
 
     }
 
-    public static DataProvider getInstanceFor(String source, DataProviderType type)
+    public static Object getInstanceFor(String source, DataProviderType type)
             throws DataProviderNotFoundException {
 
-        DataProvider dataProvider = null;
+        Object dataProvider;
         for (DataFormatHandler dfh : formatHandlers) {
             dataProvider = dfh.canHandle(source, type);
             if (dataProvider != null) {
@@ -36,6 +36,9 @@ public class DataProviderFactory {
     }
 
     public static void registerDataFormatHandler(DataFormatHandler dfh) {
+        if (dfh == null)
+            throw new NullPointerException("Null pointer in format handler");
+
         formatHandlers.add(dfh);
     }
 

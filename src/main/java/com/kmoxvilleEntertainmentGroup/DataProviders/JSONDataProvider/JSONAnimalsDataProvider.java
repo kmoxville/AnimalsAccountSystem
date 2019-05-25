@@ -1,16 +1,14 @@
 package com.kmoxvilleEntertainmentGroup.DataProviders.JSONDataProvider;
 
-import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.kmoxvilleEntertainmentGroup.Animal;
 import com.kmoxvilleEntertainmentGroup.DataProviders.*;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-public class JSONAnimalsDataProvider implements DataProvider<List<Animal>> {
+public class JSONAnimalsDataProvider implements AnimalsDataProvider {
 
     private String dataSource;
 
@@ -28,23 +26,23 @@ public class JSONAnimalsDataProvider implements DataProvider<List<Animal>> {
     }
 
     @Override
-    public List<Animal> readAllData() throws DataProviderException {
-        List<Animal> result;
+    public Set<Animal> readAllData() throws DataProviderParseException {
+        Set<Animal> result;
 
         try (FileReader fileReader = new FileReader(dataSource)) {
             JsonReader reader = new JsonReader(fileReader);
             result = readAnimalsArray(reader);
         }
         catch (Exception e) {
-            throw new DataProviderException("Unable to parse animals file", e);
+            throw new DataProviderParseException("Unable to parse animals file", e);
         }
 
         return result;
     }
 
     //JSON parsing begin
-    private List<Animal> readAnimalsArray(JsonReader reader) throws IOException {
-        List<Animal> animals = new ArrayList<>();
+    private Set<Animal> readAnimalsArray(JsonReader reader) throws IOException {
+        Set<Animal> animals = new HashSet<>();
 
         reader.beginArray();
         while (reader.hasNext()) {

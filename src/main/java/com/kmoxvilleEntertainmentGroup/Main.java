@@ -19,13 +19,13 @@ public class Main {
             exit(-1);
         }
 
-        DataProvider propDataProvider = null;
-        DataProvider animalsDataProvider = null;
+        PropertiesDataProvider propDataProvider = null;
+        AnimalsDataProvider animalsDataProvider = null;
 
         try {
-            propDataProvider = DataProviderFactory
+            propDataProvider = (PropertiesDataProvider)DataProviderFactory
                     .getInstanceFor(Options.getPropertiesSource(), DataProviderType.Property);
-            animalsDataProvider = DataProviderFactory
+            animalsDataProvider = (AnimalsDataProvider)DataProviderFactory
                     .getInstanceFor(Options.getAnimalsSource(), DataProviderType.Animal);
         }
         catch (DataProviderNotFoundException e) {
@@ -36,11 +36,9 @@ public class Main {
         try {
             (new MainEngine(animalsDataProvider, propDataProvider)).run();
         }
-        catch (ClassNotFoundException e) { //Just suppress this
-
-        }
-        catch (DataProviderException e) {
+        catch (DataProviderParseException e) {
             print("Source reading error: " + e.getMessage());
+            exit(-3);
         }
     }
 

@@ -7,7 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-public class JSONPropertiesDataProvider implements DataProvider<Map<String, Set<String>>> {
+public class JSONPropertiesDataProvider implements PropertiesDataProvider {
     private String dataSource;
 
     static {
@@ -24,14 +24,14 @@ public class JSONPropertiesDataProvider implements DataProvider<Map<String, Set<
     }
 
     @Override
-    public Map<String, Set<String>> readAllData() throws DataProviderException {
+    public Map<String, Set<String>> readAllData() throws DataProviderParseException {
         Map<String, Set<String>> result;
         try (FileReader fileReader = new FileReader(dataSource)) {
             JsonReader reader = new JsonReader(fileReader);
             result = readProperties(reader);
         }
         catch (Exception e) {
-            throw new DataProviderException("Unable to parse properties file", e);
+            throw new DataProviderParseException("Unable to parse properties file", e);
         }
 
         return result;

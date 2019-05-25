@@ -2,6 +2,9 @@ package com.kmoxvilleEntertainmentGroup.Utils;
 
 import org.apache.commons.cli.*;
 
+import static com.kmoxvilleEntertainmentGroup.Utils.HelperUtils.exit;
+import static com.kmoxvilleEntertainmentGroup.Utils.HelperUtils.print;
+
 public class Options {
 
     public static void processCommandLine(String[] args) throws ParseException {
@@ -28,18 +31,25 @@ public class Options {
 
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
-        CommandLine cmd = null;
+        CommandLine cmd;
 
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
             System.out.println(e.getMessage());
-            formatter.printHelp("accontanimals", options);
+            formatter.printHelp("accontanimals [OPTIONS] <RULE>", options);
             throw e;
         }
 
         propertiesSource = cmd.getOptionValue("properties-source");
         animalsSource = cmd.getOptionValue("animals-source");
+        try {
+            rule = cmd.getArgList().get(0);
+        }
+        catch (IndexOutOfBoundsException e) {
+            print("No rule specified");
+            exit(-2);
+        }
     }
 
     public static String getPropertiesSource() {
@@ -50,6 +60,11 @@ public class Options {
         return animalsSource;
     }
 
+    public static String getRule() {
+        return rule;
+    }
+
+    private static String rule = null;
     private static String propertiesSource = null;
     private static String animalsSource = null;
 }
