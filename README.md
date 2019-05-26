@@ -2,7 +2,9 @@
 Description
 
 usage: accountanimals [OPTIONS] <RULE>
+ 
  -a,--animals-source <arg>      Source of animals(json, xml, cvs file)
+ 
  -p,--properties-source <arg>   Source of properties(json, xml, cvs file)
   
 Простая система учета животных. Через аргументы коммандной строки передаются имена файлов со свойствами животных и перечень животных с указанием их свойств. 
