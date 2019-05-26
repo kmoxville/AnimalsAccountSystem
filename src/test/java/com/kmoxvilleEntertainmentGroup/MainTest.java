@@ -9,6 +9,7 @@ import java.io.File;
 class MainTest {
 
     @Test
+    @Disabled
     void main() {
         String pathToAnimalsFile = getAbsolutePath("/good-resources/animals.json");
         String pathToPropsFile = getAbsolutePath("/good-resources/properties.json");
