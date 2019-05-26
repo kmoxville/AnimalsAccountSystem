@@ -1,9 +1,8 @@
 package com.kmoxvilleEntertainmentGroup;
 
-import com.kmoxvilleEntertainmentGroup.DataProviders.AnimalsDataProvider;
+import com.kmoxvilleEntertainmentGroup.DataProviders.DataProvider;
 import com.kmoxvilleEntertainmentGroup.DataProviders.DataProviderParseException;
-import com.kmoxvilleEntertainmentGroup.DataProviders.PropertiesDataProvider;
-import com.kmoxvilleEntertainmentGroup.Utils.Options;
+import com.kmoxvilleEntertainmentGroup.Utils.ExitCodes;
 
 import java.sql.*;
 import java.text.MessageFormat;
@@ -13,26 +12,27 @@ import java.util.Set;
 import static com.kmoxvilleEntertainmentGroup.Utils.HelperUtils.*;
 
 class MainEngine {
-    private PropertiesDataProvider propProvider;
-    private AnimalsDataProvider animalsProvider;
+
+    private final DataProvider dataProvider;
+    private final String rule;
     private Connection dbConn;
 
-    MainEngine(AnimalsDataProvider animalsProvider, PropertiesDataProvider propProvider) {
-        this.animalsProvider = animalsProvider;
-        this.propProvider = propProvider;
+    MainEngine(DataProvider dataProvider, String rule) {
+        this.dataProvider = dataProvider;
+        this.rule = rule;
     }
 
-    void run() throws DataProviderParseException {
-        Set<Animal> animalsSet = animalsProvider.readAllData();
-        Map<String, Set<String>> propsSet = propProvider.readAllData();
+    void run() throws DataParseException, RuleParseException, DataProviderParseException {
+        Set<Animal> animalsSet = dataProvider.readAllAnimals();
+        Map<String, Set<String>> propsSet = dataProvider.readAllProperties();
 
-        connect();
+        initDBEngine();
         createTables(animalsSet, propsSet);
-        countAnimalsByRule(Options.getRule());
-        disconnect();
+        countAnimalsByRule(rule);
+        shutdownDBEngine();
     }
 
-    private void countAnimalsByRule(String rule) {
+    private void countAnimalsByRule(String rule) throws RuleParseException {
         try {
             Statement stmt = dbConn.createStatement();
             String sql = "SELECT COUNT(Название) FROM Животные WHERE "; //FIXME
@@ -40,8 +40,7 @@ class MainEngine {
             print(String.valueOf(rs.getInt(1)));
         }
         catch (SQLException e) {
-            print(e.getMessage());
-            exit(-5);
+            throw new RuleParseException();
         }
     }
 
@@ -49,22 +48,23 @@ class MainEngine {
         try (Statement stmt = dbConn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
-            print(e.getMessage());
-            disconnect();
-            exit(-5);
+            throw new RuntimeException(e); //Unchecked exception to bypass lambda restriction
         }
     }
 
-    private void createTables(Set<Animal> animalsSet, Map<String, Set<String>> properties) {
+    private void createTables(Set<Animal> animalsSet, Map<String, Set<String>> properties)
+            throws DataParseException {
+
         try {
             createPropertiesTables(properties);
             createAnimalsTables(animalsSet);
         }
         catch (Exception e) {
-            print(e.getMessage());
+            throw new DataParseException();
         }
     }
 
+    //Exception in anonymous inner class = cancer
     private void createPropertiesTables(Map<String, Set<String>> properties) {
         properties.entrySet().iterator().forEachRemaining((entry) -> {
             String fmtStr = MessageFormat.format("CREATE TEMP TABLE {0} " +
@@ -114,24 +114,25 @@ class MainEngine {
 
     }
 
-    private void connect() {
+    private void initDBEngine() {
         try {
             String url = "jdbc:sqlite:animals.db";
             dbConn = DriverManager.getConnection(url);
             Statement stmt = dbConn.createStatement();
             stmt.execute("PRAGMA foreign_keys = ON;");
         } catch (SQLException e) {
-            print(e.getMessage());
-            exit(-5);
+            //That should never happen
+            print("SQLite init error" + e.getMessage());
+            exit(ExitCodes.CriticalError);
         }
     }
 
-    private void disconnect() {
+    private void shutdownDBEngine() {
         try {
             dbConn.close();
         } catch (SQLException e) {
-            print(e.getMessage());
-            exit(-5);
+            //That should never happen
+            exit(ExitCodes.CriticalError);
         }
     }
 }

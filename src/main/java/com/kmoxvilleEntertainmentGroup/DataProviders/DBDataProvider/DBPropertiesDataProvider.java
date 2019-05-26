@@ -1,12 +1,14 @@
-package com.kmoxvilleEntertainmentGroup.DataProviders.XMLDataProvider;
+package com.kmoxvilleEntertainmentGroup.DataProviders.DBDataProvider;
 
 import com.kmoxvilleEntertainmentGroup.DataProviders.PropertiesDataProvider;
 
 import java.util.Map;
 import java.util.Set;
 
-public class XMLPropertiesDataProvider implements PropertiesDataProvider {
-
+/**
+ * Источник данных из базы данных
+ */
+public class DBPropertiesDataProvider implements PropertiesDataProvider {
     @Override
     public Map<String, Set<String>> readAllProperties() {
         throw new UnsupportedOperationException();

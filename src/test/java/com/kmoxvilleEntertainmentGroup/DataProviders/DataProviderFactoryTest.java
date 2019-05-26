@@ -1,19 +1,23 @@
 package com.kmoxvilleEntertainmentGroup.DataProviders;
 
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class DataProviderFactoryTest {
+class DataProviderFactoryTest {
 
-    @Test(expected = NullPointerException.class)
-    public void registerDataFormatHandler() {
-        DataProviderFactory.registerDataFormatHandler(null);
+    @Test
+    void registerDataFormatHandler() {
+        Assertions.assertThrows(NullPointerException.class, () ->
+            DataProviderFactory.registerDataFormatHandler(null)
+        );
     }
 
+    @Test
+    void getInstanceFor() {
+        Assertions.assertThrows(DataProviderNotFoundException.class, () ->
+            DataProviderFactory.createDataProvider(".lol", ".kek")
+        );
 
-    @Test(expected = DataProviderNotFoundException.class)
-    public void getInstanceFor() throws DataProviderNotFoundException {
-        DataProviderFactory.getInstanceFor(".fgdfg", DataProviderType.Property);
     }
 }

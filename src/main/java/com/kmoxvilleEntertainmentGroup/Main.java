@@ -1,9 +1,7 @@
 package com.kmoxvilleEntertainmentGroup;
 
-//import org.apache.commons.cli.*;
-
 import com.kmoxvilleEntertainmentGroup.DataProviders.*;
-import com.kmoxvilleEntertainmentGroup.Utils.Options;
+import com.kmoxvilleEntertainmentGroup.Utils.*;
 import static com.kmoxvilleEntertainmentGroup.Utils.HelperUtils.*;
 import org.apache.commons.cli.ParseException;
 
@@ -15,31 +13,42 @@ public class Main {
             Options.processCommandLine(args);
         }
         catch (ParseException e) {
-            print(e.getMessage());
-            exit(-1);
+            exit(ExitCodes.CommandLineParsingError);
+        }
+        catch (IndexOutOfBoundsException e) {
+            print("No rule specified");
+            exit(ExitCodes.CommandLineParsingError);
         }
 
-        PropertiesDataProvider propDataProvider = null;
-        AnimalsDataProvider animalsDataProvider = null;
+        DataProvider dataProvider = null;
 
         try {
-            propDataProvider = (PropertiesDataProvider)DataProviderFactory
-                    .getInstanceFor(Options.getPropertiesSource(), DataProviderType.Property);
-            animalsDataProvider = (AnimalsDataProvider)DataProviderFactory
-                    .getInstanceFor(Options.getAnimalsSource(), DataProviderType.Animal);
+            dataProvider = DataProviderFactory.createDataProvider(Options.getAnimalsSource(),
+                    Options.getPropertiesSource());
         }
         catch (DataProviderNotFoundException e) {
             print("No handler for such data source");
-            exit(-2);
+            exit(ExitCodes.UnknownDataSource);
         }
 
+
         try {
-            (new MainEngine(animalsDataProvider, propDataProvider)).run();
+            new MainEngine(dataProvider, Options.getRule()).run();
+        }
+        catch (DataParseException e) {
+            print("Something wrong with sources of data, details:\n" + e.getCause()); //SQLite error
+            exit(ExitCodes.ParseError);
+        }
+        catch (RuleParseException e) {
+            print("Wrong rule format\n" + e.getMessage());
+            exit(ExitCodes.RuleProcessingError);
         }
         catch (DataProviderParseException e) {
-            print("Source reading error: " + e.getMessage());
-            exit(-3);
+            print("Error while reading data from sources\n" + e.getMessage());
+            exit(ExitCodes.ParseError);
         }
+
+
     }
 
 }

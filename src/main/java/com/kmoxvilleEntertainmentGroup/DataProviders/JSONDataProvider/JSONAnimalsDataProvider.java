@@ -13,20 +13,21 @@ public class JSONAnimalsDataProvider implements AnimalsDataProvider {
     private String dataSource;
 
     static {
-        DataProviderFactory.registerDataFormatHandler((format, type) -> {
-            if (format.endsWith(".json") && (type == DataProviderType.Animal ))
-                return new JSONAnimalsDataProvider(format);
+        DataProviderFactory.registerDataFormatHandler(new AnimalsDataFormatHandler() {
+            @Override
+            public AnimalsDataProvider canHandle(String format) {
+                if (format.endsWith(".json"))
+                    return new JSONAnimalsDataProvider(format);
 
-            return null;
+                return null;
+            }
         });
     }
 
-    public JSONAnimalsDataProvider(String dataSource) {
-        this.dataSource = dataSource;
-    }
+    private JSONAnimalsDataProvider(String dataSource) { this.dataSource = dataSource; }
 
     @Override
-    public Set<Animal> readAllData() throws DataProviderParseException {
+    public Set<Animal> readAllAnimals() throws DataProviderParseException {
         Set<Animal> result;
 
         try (FileReader fileReader = new FileReader(dataSource)) {

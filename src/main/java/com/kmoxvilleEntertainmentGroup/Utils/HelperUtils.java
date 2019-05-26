@@ -5,7 +5,7 @@ public class HelperUtils {
         System.out.println(str);
     }
 
-    public static void exit(int code) {
-        System.exit(code);
+    public static void exit(ExitCodes code) {
+        System.exit(code.getCode());
     }
 }

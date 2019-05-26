@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Animal {
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
@@ -17,6 +17,6 @@ public class Animal {
         return properties;
     }
 
-    private String name = new String();
+    private String name;
     private final Map<String, String> properties = new HashMap<>();
 }

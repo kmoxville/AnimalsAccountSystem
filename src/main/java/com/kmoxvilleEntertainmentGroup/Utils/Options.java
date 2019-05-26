@@ -2,8 +2,7 @@ package com.kmoxvilleEntertainmentGroup.Utils;
 
 import org.apache.commons.cli.*;
 
-import static com.kmoxvilleEntertainmentGroup.Utils.HelperUtils.exit;
-import static com.kmoxvilleEntertainmentGroup.Utils.HelperUtils.print;
+import static com.kmoxvilleEntertainmentGroup.Utils.HelperUtils.*;
 
 public class Options {
 
@@ -36,7 +35,6 @@ public class Options {
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
-            System.out.println(e.getMessage());
             formatter.printHelp("accontanimals [OPTIONS] <RULE>", options);
             throw e;
         }
@@ -48,7 +46,7 @@ public class Options {
         }
         catch (IndexOutOfBoundsException e) {
             print("No rule specified");
-            exit(-2);
+            throw e;
         }
     }
 

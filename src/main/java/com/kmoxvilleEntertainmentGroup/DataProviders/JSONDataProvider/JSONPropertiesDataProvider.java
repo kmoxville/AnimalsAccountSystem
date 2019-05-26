@@ -11,20 +11,23 @@ public class JSONPropertiesDataProvider implements PropertiesDataProvider {
     private String dataSource;
 
     static {
-        DataProviderFactory.registerDataFormatHandler((format, type) -> {
-                if (format.endsWith(".json") && (type == DataProviderType.Property ))
+        DataProviderFactory.registerDataFormatHandler(new PropertiesDataFormatHandler() {
+            @Override
+            public PropertiesDataProvider canHandle(String format) {
+                if (format.endsWith(".json"))
                     return new JSONPropertiesDataProvider(format);
 
                 return null;
+            }
         });
     }
 
-    public JSONPropertiesDataProvider(String dataSource) {
+    private JSONPropertiesDataProvider(String dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
-    public Map<String, Set<String>> readAllData() throws DataProviderParseException {
+    public Map<String, Set<String>> readAllProperties() throws DataProviderParseException {
         Map<String, Set<String>> result;
         try (FileReader fileReader = new FileReader(dataSource)) {
             JsonReader reader = new JsonReader(fileReader);

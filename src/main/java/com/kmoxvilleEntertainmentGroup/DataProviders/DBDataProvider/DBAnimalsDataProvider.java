@@ -1,12 +1,14 @@
-package com.kmoxvilleEntertainmentGroup.DataProviders.XMLDataProvider;
+package com.kmoxvilleEntertainmentGroup.DataProviders.DBDataProvider;
 
 import com.kmoxvilleEntertainmentGroup.Animal;
 import com.kmoxvilleEntertainmentGroup.DataProviders.AnimalsDataProvider;
 
 import java.util.Set;
 
-public class XMLAnimalsDataProvider implements AnimalsDataProvider {
-
+/**
+ * Источник данных из базы данных
+ */
+public class DBAnimalsDataProvider implements AnimalsDataProvider {
     @Override
     public Set<Animal> readAllAnimals() {
         throw new UnsupportedOperationException();
