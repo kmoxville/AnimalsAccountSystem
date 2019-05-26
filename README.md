@@ -19,3 +19,5 @@ AnimalsAccountSystem/src/main/resources/good-resources/properties.json
 Для добавления новых источников данных(xml, psql, etc..) достаточно реализовать интерфейл AnimalsDataProvider или PropertiesDataProvider соответсвенно без изменения кода вызова
 
 В MainTest.java различные сценарии тестирования и пример с предопределенными данными из AnimalsAccountSystem/src/main/resources/good-resources/ (по умолчанию выключен)
+
+Внутри всё работает на SQLite, создаются таблицы со свойтсвами как PRIMARY KEY, в таблице с животными столбцы затем ссылаются на них через FOREIGN KEY. 
